@@ -79,8 +79,8 @@ class XiaohongshuPoster:
         # 上传图片
         if images:
             self.page.wait_for_selector(".upload-input")
-            # 将所有图片路径用\n连接成一个字符串一次性上传
-            self.page.locator(".upload-input").set_input_files('\n'.join(images))
+            # 直接传入图片路径列表
+            self.page.locator(".upload-input").set_input_files(images)
             time.sleep(1)
         
         title = title[:20]
