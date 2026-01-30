@@ -99,8 +99,45 @@ class XiaohongshuPoster:
         time.sleep(5)
         self.page.locator(".publishBtn").click(force=True)
         self.page.wait_for_url("https://creator.xiaohongshu.com/publish/success*")
-        print('发布成功')
-        return True, "发布成功"
+        print('图文发布成功')
+        return True, "图文发布成功"
+
+    def login_to_publish_video(self, title, content, videos=None, slow_mode=False):
+        print(f"开始发布视频")
+        logger.info(f"开始发布视频")
+        self._load_cookies()
+        
+        self.page.goto("https://creator.xiaohongshu.com/publish/publish?from=menu&target=video")
+        self._set_local_storage_item('creator-short-note-guide-v2', 'true')
+        self._set_local_storage_item('draft-tooltip-guide', 'true')
+        self._set_local_storage_item('creator-new-publish', 'true')
+        self.page.reload()
+
+        # 上传图片
+        if videos:
+            self.page.wait_for_selector(".upload-input")
+            # 直接传入路径列表
+            self.page.locator(".upload-input").set_input_files(videos)
+            time.sleep(1)
+        
+        title = title[:20]
+        self.page.wait_for_selector(".d-text", timeout=5000)
+        self.page.get_by_placeholder("填写标题会有更多赞哦～").fill(title)
+
+        # Start of Selection
+        print(content)
+        content = content[:1000]
+        self.page.wait_for_selector(".tiptap")
+        self.page.locator(".editor-content .tiptap").fill(content)
+        
+        # 发布
+        if slow_mode:
+            time.sleep(5)
+        time.sleep(5)
+        self.page.locator(".publishBtn").click(force=True)
+        self.page.wait_for_url("https://creator.xiaohongshu.com/publish/success*")
+        print('视频发布成功')
+        return True, "视频发布成功"
 
     def close(self):
         """关闭浏览器"""
@@ -208,10 +245,12 @@ def main():
 
     # login_to_publish 子命令
     publish_parser = subparsers.add_parser("login_to_publish", help="登录并发布图文")
-    publish_parser.add_argument("--title", type=str, required=True, help="标题 (最多20字)")
-    publish_parser.add_argument("--content", type=str, required=True, help="正文内容")
-    publish_parser.add_argument("--images", type=str, nargs="+", help="图片路径列表")
-    publish_parser.add_argument("--slow-mode", action="store_true", help="慢速模式 (发布前等待5秒)")
+    publish_parser = subparsers.add_parser("login_to_publish_video", help="登录并发布视频")
+    publish_parser.add_argument("--title", "-t", type=str, required=True, help="标题 (最多20字)")
+    publish_parser.add_argument("--content", "-c", type=str, required=True, help="正文内容")
+    publish_parser.add_argument("--images", "-i", type=str, nargs="+", help="图片路径列表")
+    publish_parser.add_argument("--videos", "-v", type=str, nargs="+", help="视频路径列表")
+    publish_parser.add_argument("--slow-mode", "-s", action="store_true", help="慢速模式 (发布前等待5秒)")
 
     args = parser.parse_args()
 
@@ -225,6 +264,8 @@ def main():
             poster.login(phone, country_code)
         elif args.command == "login_to_publish":
             poster.login_to_publish(args.title, args.content, args.images, args.slow_mode)
+        elif args.command == "login_to_publish_video":
+            poster.login_to_publish_video(args.title, args.content, args.videos, args.slow_mode)
 
 
 if __name__ == "__main__":

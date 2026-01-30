@@ -1,3 +1,6 @@
+# XiaoHongShu Publisher SKILL
+
+Automatically publish article, images or videos to xiaohongshu.com with playwright.
 
 ## How to Set Up
 
@@ -32,4 +35,4 @@ Note, it does NOT use playwright with MCP from Microsoft.
 ```
 
 3. fill your phone number to `.env` file. When first time use or login failed, you need to run `/xhs-publisher login`.
-4. Execute `/xhs-publisher 标题 正文内容 图片` in Claude Code.
+4. Execute `/xhs-publisher 标题 正文内容 图片文件` 或 `视频文件` in Claude Code.
