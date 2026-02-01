@@ -35,4 +35,4 @@ Note, it does NOT use playwright with MCP from Microsoft.
 ```
 
 3. fill your phone number to `.env` file. When first time use or login failed, you need to run `/xhs-publisher login`.
-4. Execute `/xhs-publisher 标题 正文内容 图片文件` 或 `视频文件` in Claude Code.
+4. In Claude Code, execute `/xhs-publisher login_to_publish_image -t 标题 -c 正文内容 -i 图片文件 -s` 或 `/xhs-publisher login_to_publish_video -t 标题 -c 正文内容 -v 视频文件 -s`.

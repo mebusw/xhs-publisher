@@ -65,26 +65,28 @@ class XiaohongshuPoster:
         with open(self.cookies_file, 'w') as f:
             json.dump(cookies, f)
 
-    def login_to_publish(self, title, content, images=None, slow_mode=False):
+    def login_to_publish_image(self, title, content, images=None, slow_mode=False):
         print(f"开始发布图文")
         logger.info(f"开始发布图文")
         self._load_cookies()
         
         self.page.goto("https://creator.xiaohongshu.com/publish/publish?from=menu&target=image")
+        time.sleep(3)
         self._set_local_storage_item('creator-short-note-guide-v2', 'true')
         self._set_local_storage_item('draft-tooltip-guide', 'true')
         self._set_local_storage_item('creator-new-publish', 'true')
         self.page.reload()
+        time.sleep(5)
 
         # 上传图片
         if images:
-            self.page.wait_for_selector(".upload-input")
+            self.page.wait_for_selector(".upload-input", timeout=30000)
             # 直接传入图片路径列表
             self.page.locator(".upload-input").set_input_files(images)
-            time.sleep(1)
-        
+            time.sleep(5)
+
         title = title[:20]
-        self.page.wait_for_selector(".d-text", timeout=5000)
+        self.page.wait_for_selector(".d-text", timeout=30000)
         self.page.get_by_placeholder("填写标题会有更多赞哦～").fill(title)
 
         # Start of Selection
@@ -113,7 +115,7 @@ class XiaohongshuPoster:
         self._set_local_storage_item('creator-new-publish', 'true')
         self.page.reload()
 
-        # 上传图片
+        # 上传视频
         if videos:
             self.page.wait_for_selector(".upload-input")
             # 直接传入路径列表
@@ -121,7 +123,7 @@ class XiaohongshuPoster:
             time.sleep(1)
         
         title = title[:20]
-        self.page.wait_for_selector(".d-text", timeout=5000)
+        self.page.wait_for_selector(".d-text", timeout=30000)
         self.page.get_by_placeholder("填写标题会有更多赞哦～").fill(title)
 
         # Start of Selection
@@ -243,14 +245,19 @@ def main():
     # login 子命令
     login_parser = subparsers.add_parser("login", help="登录小红书")
 
-    # login_to_publish 子命令
-    publish_parser = subparsers.add_parser("login_to_publish", help="登录并发布图文")
-    publish_parser = subparsers.add_parser("login_to_publish_video", help="登录并发布视频")
-    publish_parser.add_argument("--title", "-t", type=str, required=True, help="标题 (最多20字)")
-    publish_parser.add_argument("--content", "-c", type=str, required=True, help="正文内容")
-    publish_parser.add_argument("--images", "-i", type=str, nargs="+", help="图片路径列表")
-    publish_parser.add_argument("--videos", "-v", type=str, nargs="+", help="视频路径列表")
-    publish_parser.add_argument("--slow-mode", "-s", action="store_true", help="慢速模式 (发布前等待5秒)")
+    # login_to_publish_image 子命令
+    publish_image_parser = subparsers.add_parser("login_to_publish_image", help="登录并发布图文")
+    publish_image_parser.add_argument("--title", "-t", type=str, required=True, help="标题 (最多20字)")
+    publish_image_parser.add_argument("--content", "-c", type=str, required=True, help="正文内容")
+    publish_image_parser.add_argument("--images", "-i", type=str, nargs="+", help="图片路径列表")
+    publish_image_parser.add_argument("--slow-mode", "-s", action="store_true", help="慢速模式 (发布前等待5秒)")
+
+    # login_to_publish_video 子命令
+    publish_video_parser = subparsers.add_parser("login_to_publish_video", help="登录并发布视频")
+    publish_video_parser.add_argument("--title", "-t", type=str, required=True, help="标题 (最多20字)")
+    publish_video_parser.add_argument("--content", "-c", type=str, required=True, help="正文内容")
+    publish_video_parser.add_argument("--videos", "-v", type=str, nargs="+", help="视频路径列表")
+    publish_video_parser.add_argument("--slow-mode", "-s", action="store_true", help="慢速模式 (发布前等待5秒)")
 
     args = parser.parse_args()
 
@@ -262,8 +269,8 @@ def main():
             phone = os.getenv("XHS_PHONE")
             country_code = os.getenv("XHS_COUNTRY_CODE", "+86")
             poster.login(phone, country_code)
-        elif args.command == "login_to_publish":
-            poster.login_to_publish(args.title, args.content, args.images, args.slow_mode)
+        elif args.command == "login_to_publish_image":
+            poster.login_to_publish_image(args.title, args.content, args.images, args.slow_mode)
         elif args.command == "login_to_publish_video":
             poster.login_to_publish_video(args.title, args.content, args.videos, args.slow_mode)
 

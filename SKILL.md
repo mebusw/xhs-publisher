@@ -15,16 +15,26 @@ description: automatically publish article, images or videos to xiaohongshu.com 
 
 ### Re-login to Xiaohongshu
 ```bash
-source ~/.pyenv/versions/xhs-playwright/bin/activate  
+source ~/.pyenv/versions/xhs-playwright/bin/activate 
 python3 scripts/auto-publish-with-playwright.py login 
 ```
 
-## Publish an article
+## Publish an article with images
 ```bash
 source ~/.pyenv/versions/xhs-playwright/bin/activate  
-python3 scripts/auto-publish-with-playwright.py login_to_publish \
-  --title "标题" \
-  --content "正文内容" \
-  --images img1.jpg img2.jpg \
-  --slow-mode
+python3 scripts/auto-publish-with-playwright.py login_to_publish_image \
+  -t "标题" \
+  -c "正文内容" \
+  -i img1.jpg img2.jpg \
+  -s
+```
+
+## Publish an article with video
+```bash
+source ~/.pyenv/versions/xhs-playwright/bin/activate  
+python3 scripts/auto-publish-with-playwright.py login_to_publish_video \
+  -t "标题" \
+  -c "正文内容" \
+  -v <视频文件> \
+  -s
 ```
